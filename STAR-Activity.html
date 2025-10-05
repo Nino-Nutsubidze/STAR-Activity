@@ -1,0 +1,659 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Floward • STAR Practice Hub</title>
+<style>
+  /* Floward-style font fallbacks (no external requests) */
+  @font-face{font-family:"Floward Sans"; src: local("Inter"), local("Helvetica Neue"), local("Helvetica"), local("Arial"); font-weight:300 800; font-style:normal; font-display:swap;}
+  @font-face{font-family:"Floward Arabic"; src: local("Noto Kufi Arabic"), local("Cairo"), local("Tahoma"); font-weight:300 800; font-style:normal; font-display:swap;}
+
+  :root{
+    --pine:#00313C; --teal:#074E59; --sand:#F1CEB3; --linen:#F0E9E0; --accent:#2BB673;
+    --radius:14px; --shadow:0 1px 3px rgba(0,0,0,.06), 0 6px 18px rgba(0,0,0,.04);
+    --fs-xs:12px; --fs-sm:13.5px; --fs-md:15.5px; --fs-lg:18px; --fs-xl:22px; --fs-2xl:28px;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:linear-gradient(180deg,var(--linen),#fff);color:var(--pine);
+       font-family:"Floward Sans","Floward Arabic",system-ui; font-size:var(--fs-md);line-height:1.5}
+  .container{max-width:1200px;margin:0 auto;padding:18px 24px}
+  header{display:flex;align-items:flex-start;justify-content:space-between;gap:12px}
+  h1{margin:0;font-size:var(--fs-2xl)} h2{margin:0 0 6px;font-size:var(--fs-xl)} h3{margin:0;font-size:var(--fs-lg)}
+  .sub{color:var(--teal);font-size:var(--fs-sm);max-width:760px}
+  .brand{background:var(--sand);color:var(--pine);border-radius:999px;padding:6px 12px;font-weight:800}
+
+  /* Language switch */
+  .lang-toggle{display:flex;align-items:center;gap:10px;background:#fff;border:1px solid var(--sand);border-radius:999px;padding:8px 12px}
+  .switch{appearance:none;width:46px;height:26px;border-radius:999px;background:#cfd8dc;position:relative;cursor:pointer}
+  .switch:checked{background:#074E59}
+  .switch:before{content:"";position:absolute;top:3px;left:3px;width:20px;height:20px;border-radius:50%;background:#fff;transition:left .2s}
+  .switch:checked:before{left:23px}
+
+  /* Buttons, cards */
+  .btn{appearance:none;border:1px solid var(--sand);background:#fff;color:#00313C;
+       padding:10px 14px;border-radius:12px;cursor:pointer;font-weight:800;font-family:"Floward Sans","Floward Arabic";font-size:var(--fs-md)}
+  .btn.primary{background:#00313C;color:#fff;border-color:#00313C}
+  .btn.teal{background:#074E59;color:#fff;border-color:#074E59}
+  .btn.link{background:transparent;border:none;color:#074E59;text-decoration:underline;cursor:pointer;padding:6px 4px}
+  .btn.pill{border-radius:999px}
+  .card{background:#fff;border:1px solid #EEE;border-radius:var(--radius);box-shadow:var(--shadow)}
+  .card .body{padding:18px}
+  .between{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}
+
+  /* Layout */
+  .grid{display:grid;gap:16px}
+  .grid.cols-2{grid-template-columns:1fr}
+  @media(min-width:900px){.grid.cols-2{grid-template-columns:1fr 1fr}}
+  .tile{padding:22px;border-radius:16px;border:1px solid var(--sand);background:#fff;display:flex;flex-direction:column;gap:10px;min-height:170px;box-shadow:var(--shadow)}
+  .tile:hover{transform:translateY(-1px);transition:.15s;box-shadow:0 8px 28px rgba(0,0,0,.06)}
+
+  .row{display:grid;gap:12px}
+  @media(min-width:720px){.row{grid-template-columns:1fr 1fr}}
+  label{display:block;font-weight:800;margin-bottom:6px;letter-spacing:.1px;font-size:var(--fs-sm)}
+  textarea,input{width:100%;border:1px solid var(--sand);border-radius:10px;padding:10px 12px;background:#fff;color:#00313C;font-family:"Floward Sans","Floward Arabic";font-size:var(--fs-md)}
+  textarea{min-height:96px;resize:vertical}
+
+  /* Chips */
+  .chips{display:flex;flex-wrap:wrap;gap:8px}
+  .chip{border:1px solid var(--sand);border-radius:999px;padding:6px 10px;font-size:var(--fs-sm);background:#F0E9E0;cursor:pointer}
+  .chip.sel{background:#074E59;color:#fff}
+
+  /* Preview + progress */
+  .preview{white-space:pre-wrap;border:1px dashed var(--sand);background:#F8F5F0;padding:14px;border-radius:10px;font-size:var(--fs-sm)}
+  .progress{width:220px;height:8px;background:#e0e0e0;border-radius:999px;overflow:hidden}
+  .bar{height:100%;background:linear-gradient(90deg,var(--teal),var(--accent));width:0%}
+  .pct{font-weight:900;min-width:36px;display:inline-block;text-align:right}
+
+  /* RTL */
+  .rtl{direction:rtl}
+
+  /* Scenarios */
+  .scenarios{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}
+  @media(min-width:900px){.scenarios{grid-template-columns:repeat(5,1fr)}}
+  .scenario-card{display:flex;align-items:flex-start;gap:10px;padding:12px;border:1px solid var(--sand);
+    border-radius:12px;background:linear-gradient(180deg,#fff,#fbfaf7);cursor:pointer;box-shadow:var(--shadow)}
+  .scenario-card:hover{transform:translateY(-1px);transition:.12s}
+  .scenario-card.active{outline:2px solid var(--teal)}
+  .scenario-num{font-weight:800;background:rgba(7,78,89,.08);color:#074E59;border:1px solid rgba(7,78,89,.18);border-radius:10px;padding:6px 8px;font-size:var(--fs-sm);min-width:36px;text-align:center}
+  .scenario-title{font-weight:700;font-size:var(--fs-sm);color:#074E59;opacity:.95}
+  .scenario-muted{font-size:var(--fs-xs);opacity:.55;color:#074E59;font-weight:500;margin-top:2px}
+  .disclaimer{margin-bottom:8px;font-size:var(--fs-xs);background:#F8F5F0;border:1px dashed var(--sand);padding:8px 10px;border-radius:10px}
+
+  /* Quiz */
+  .quiz{display:grid;gap:10px}
+  .choice{display:grid;grid-template-columns:auto 1fr;align-items:center;gap:10px;border:1px solid var(--sand);border-radius:10px;padding:12px;background:#fff}
+  .choice input{margin:0;inline-size:18px;block-size:18px}
+  .alert{padding:10px;border-radius:10px}
+  .alert.error{background:#fff0f0;border:1px solid #f5b5b5;color:#7a0b0b}
+  .alert.success{background:#f0fff5;border:1px solid #b5f5c8;color:#0b7a3a}
+
+  /* Drag & Drop */
+  .board{display:grid;gap:12px}
+  @media (min-width:920px){ .board{grid-template-columns:repeat(5,1fr)} }
+  .dropzone{min-height:128px;background:#fff;border:2px dashed var(--sand);border-radius:12px;padding:10px;display:flex;flex-direction:column;gap:8px;transition:.1s}
+  .dz-head{font-weight:900;color:#074E59;font-size:var(--fs-sm)}
+  .pool{display:flex;flex-wrap:wrap;gap:8px;background:#fff;border:1px solid #eee;border-radius:12px;padding:10px}
+  .piece{user-select:none;cursor:grab;display:inline-flex;align-items:center;gap:8px;padding:8px 10px;border-radius:999px;border:1px solid var(--sand);background:#F0E9E0;font-size:var(--fs-sm)}
+  .piece.dragging{opacity:.6}
+  .dz-ok{border-color:#b5f5c8;background:#f7fff9}
+  .dz-bad{border-color:#f5b5b5;background:#fff8f8}
+
+  /* Guidance */
+  .guide{display:grid;gap:8px}
+  .guide .rowline{display:flex;gap:8px;align-items:flex-start}
+  .badge{display:inline-block;padding:4px 10px;border-radius:999px;background:#F0E9E0;border:1px solid var(--sand);font-size:var(--fs-xs);font-weight:800;color:#074E59}
+  .good{background:#e9fbf0;border-color:#c6f0d8;color:#1b7a4a}
+  .warn{background:#fff5e6;border-color:#ffdfb3;color:#7a530b}
+  .bad{background:#ffecec;border-color:#ffc9c9;color:#7a0b0b}
+</style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <div>
+        <h1 id="appTitle">STAR Practice Hub</h1>
+        <p class="sub" id="subtitle">Two ways to get appraisal-ready: practice your STAR, then play an identify-and-fix challenge.</p>
+      </div>
+      <div style="display:flex;align-items:center;gap:12px">
+        <span class="brand">Floward</span>
+        <div class="lang-toggle">
+          <span id="langLabel">English</span>
+          <input id="langSwitch" type="checkbox" class="switch" aria-label="Arabic or English" />
+        </div>
+      </div>
+    </header>
+
+    <div id="nav" style="margin-top:10px;display:none">
+      <button class="btn link" id="backHome">← Back to Home</button>
+    </div>
+
+    <!-- HOME -->
+    <section id="home" style="margin-top:14px">
+      <div class="grid cols-2">
+        <div class="tile">
+          <h3 id="tile1Title">Practice STAR feedback</h3>
+          <p id="tile1Desc" class="sub" style="font-size:var(--fs-sm)">Write a strong STAR self-assessment: live guidance, preview, competencies, copy to clipboard.</p>
+          <div style="margin-top:auto;display:flex;gap:10px"><button class="btn primary pill" id="gotoPractice">Open practice</button></div>
+        </div>
+        <div class="tile">
+          <h3 id="tile2Title">Play with STAR: spot and fix</h3>
+          <p id="tile2Desc" class="sub" style="font-size:var(--fs-sm)">Step 1: identify two issues in a weak self-assessment. Step 2: drag & drop to build a strong STAR version.</p>
+          <div style="margin-top:auto;display:flex;gap:10px"><button class="btn teal pill" id="gotoChallenge">Start challenge</button></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- PRACTICE -->
+    <section id="practice" style="display:none;margin-top:16px">
+      <div class="card"><div class="body">
+        <div class="between">
+          <h2 id="pracTitle">STAR Practice Pod</h2>
+          <div style="display:flex;align-items:center;gap:10px">
+            <div class="progress"><div id="barA" class="bar"></div></div><span id="scoreA" class="pct">0%</span>
+          </div>
+        </div>
+        <p id="pracSub" class="sub" style="margin:6px 0 14px">Practice articulating feedback and self-evaluation using STAR: Situation, Task, Action, Result.</p>
+        <div class="row">
+          <div><label id="lblA_sit">Situation</label><textarea id="A_s" placeholder="Set the scene briefly: where, when, who."></textarea></div>
+          <div><label id="lblA_task">Task</label><textarea id="A_t" placeholder="What were you responsible for?"></textarea></div>
+          <div><label id="lblA_action">Action</label><textarea id="A_a" placeholder="What did you do specifically? Use strong verbs."></textarea></div>
+          <div><label id="lblA_result">Result</label><textarea id="A_r" placeholder="What changed? Include numbers if possible."></textarea></div>
+          <div><label id="lblA_impact">Impact or Value</label><textarea id="A_i" placeholder="Why it mattered to the business or team."></textarea></div>
+          <div><label id="lblA_metric">Metric (optional)</label><input id="A_m" type="text" placeholder="E.g., +12%, −3 days, 95% CSAT" /></div>
+        </div>
+        <div style="margin-top:12px">
+          <div class="between"><h3 id="lblA_comp" style="margin:0">Competencies</h3><span class="sub" id="countA" style="font-size:var(--fs-sm)">0 selected</span></div>
+          <p class="sub" id="helpA" style="font-size:var(--fs-sm);margin:6px 0 8px">Select 2–4 that best match this STAR.</p>
+          <div class="chips" id="chipsA"></div>
+        </div>
+      </div></div>
+      <div class="card" style="margin-top:14px"><div class="body">
+        <div class="between">
+          <h3 id="lblA_prev">Preview</h3>
+          <div style="display:flex;gap:8px;flex-wrap:wrap">
+            <button class="btn" id="A_reset">Reset</button>
+            <button class="btn primary" id="A_copy">Copy statement</button>
+          </div>
+        </div>
+        <div id="A_preview" class="preview" style="margin-top:10px">Your STAR statement will build here as you type.</div>
+      </div></div>
+
+      <div class="card" style="margin-top:14px">
+        <div class="body">
+          <div class="between"><h3 id="guideTitle">Live guidance</h3></div>
+          <div id="guideWrap" class="guide"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- CHALLENGE -->
+    <section id="challenge" style="display:none;margin-top:16px">
+      <div class="card"><div class="body">
+        <div class="between">
+          <h2 id="chalTitle">Play with STAR: spot and fix</h2>
+          <div class="between" style="gap:8px">
+            <div class="progress"><div id="barB" class="bar"></div></div><span id="scoreB" class="pct">0%</span>
+          </div>
+        </div>
+
+        <div id="disclaimer" class="disclaimer">
+          These scenarios are fictional but realistic and span different functions. Pick one to start. You can change anytime.
+        </div>
+
+        <div style="margin-top:8px">
+          <div class="scenarios" id="scenarioCards"></div>
+        </div>
+
+        <div style="margin-top:12px">
+          <div style="font-weight:800;margin-bottom:6px" id="weakLabel">Weak self-assessment:</div>
+          <div class="preview" id="weakText"></div>
+        </div>
+
+        <div style="margin-top:12px">
+          <div style="font-weight:800;margin-bottom:6px" id="qLabel">Why is this not good? Choose two:</div>
+          <div class="quiz" id="choices"></div>
+          <div id="qMsg" class="alert error" style="display:none;margin-top:10px"></div>
+          <div style="display:flex;gap:10px;margin-top:10px;flex-wrap:wrap">
+            <button class="btn teal pill" id="checkBtn">Check answers</button>
+            <button class="btn pill" id="reshuffleBtn" title="Shuffle answers">Shuffle</button>
+            <button class="btn pill" id="resetScenario">Reset</button>
+          </div>
+        </div>
+      </div></div>
+
+      <div id="dndCard" class="card" style="display:none;margin-top:16px">
+        <div class="body">
+          <div class="between"><h3 id="buildStrong">Step 2: Build the strong STAR version</h3></div>
+          <p class="sub" id="dndIntro">Drag each statement chip into the correct bucket. When everything is correctly placed, your STAR preview will appear below.</p>
+
+          <div class="pool" id="piecePool"></div>
+
+          <div class="board" style="margin-top:12px">
+            <!-- Arabic bucket titles WITHOUT Latin letters -->
+            <div class="dropzone" data-slot="S"><div class="dz-head" id="dzS">الموقف</div></div>
+            <div class="dropzone" data-slot="T"><div class="dz-head" id="dzT">المهمة</div></div>
+            <div class="dropzone" data-slot="A"><div class="dz-head" id="dzA">الإجراء</div></div>
+            <div class="dropzone" data-slot="R"><div class="dz-head" id="dzR">النتيجة</div></div>
+            <div class="dropzone" data-slot="I"><div class="dz-head" id="dzI">الأثر (اختياري)</div></div>
+          </div>
+
+          <div style="display:flex;gap:10px;margin-top:12px;flex-wrap:wrap">
+            <button class="btn teal pill" id="checkPlacement">Check placement</button>
+            <button class="btn pill" id="resetPlacement">Reset</button>
+          </div>
+
+          <div style="margin-top:14px;display:none" id="finalWrap">
+            <div class="between"><h4 id="lblB_prev">Preview</h4></div>
+            <div id="B_preview" class="preview" style="margin-top:10px"></div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </div>
+
+<script>
+function $(id){return document.getElementById(id);}
+
+document.addEventListener('DOMContentLoaded', function() {
+  /* Routing */
+  const sections = {home:$("home"), practice:$("practice"), challenge:$("challenge")};
+  function route(which){
+    for(const k in sections){ sections[k].style.display = "none"; }
+    sections[which].style.display = "block";
+    $("nav").style.display = (which==="home") ? "none" : "block";
+    window.scrollTo({top:0,behavior:'smooth'});
+  }
+  $("backHome").addEventListener("click", ()=>route("home"));
+  $("gotoPractice").addEventListener("click", ()=>route("practice"));
+  $("gotoChallenge").addEventListener("click", ()=>route("challenge"));
+  route("home");
+
+  /* Confetti */
+  function confettiBurst(){
+    const c=document.createElement('canvas'); c.style.cssText="position:fixed;inset:0;pointer-events:none;z-index:9999"; document.body.appendChild(c);
+    const ctx=c.getContext('2d'); c.width=innerWidth; c.height=innerHeight;
+    const pieces=Array.from({length:100},()=>({x:Math.random()*c.width,y:-10,r:Math.random()*5+2,vy:Math.random()*3+2,vx:(Math.random()-0.5)*2,a:Math.random()*Math.PI}));
+    let frames=0; (function draw(){ ctx.clearRect(0,0,c.width,c.height);
+      pieces.forEach(p=>{ p.y+=p.vy; p.x+=p.vx; p.a+=0.1; ctx.save(); ctx.translate(p.x,p.y); ctx.rotate(p.a); ctx.fillStyle=`hsl(${Math.random()*360},70%,60%)`; ctx.fillRect(-p.r,-p.r,p.r*2,p.r*2); ctx.restore();});
+      frames++; if(frames<120) requestAnimationFrame(draw); else document.body.removeChild(c);
+    })();
+  }
+
+  /* Text resources */
+  let lang="en";
+  const T={
+    en:{
+      title:"STAR Practice Hub",
+      subtitle:"Two ways to get appraisal-ready: practice your STAR, then play an identify-and-fix challenge.",
+      back:"← Back to Home",
+      home:{t1:"Practice STAR feedback", d1:"Write a strong STAR self-assessment: live guidance, preview, competencies, copy to clipboard.",
+            t2:"Play with STAR: spot and fix", d2:"Step 1: identify two issues in a weak self-assessment. Step 2: drag & drop to build a strong STAR version.",
+            openPractice:"Open practice", startChallenge:"Start challenge"},
+      practice:{ title:"STAR Practice Pod", sub:"Practice articulating feedback and self-evaluation using STAR: Situation, Task, Action, Result.",
+        fields:{S:"Situation",T:"Task",A:"Action",R:"Result",I:"Impact or Value",M:"Metric (optional)"},
+        placeholders:{S:"Set the scene briefly: where, when, who.",T:"What were you responsible for?",A:"What did you do specifically? Use strong verbs.",R:"What changed? Include numbers if possible.",I:"Why it mattered to the business or team.",M:"E.g., +12%, −3 days, 95% CSAT"},
+        comps:"Competencies", help:"Select 2–4 that best match this STAR.", preview:"Preview", reset:"Reset", copy:"Copy statement", guide:"Live guidance"},
+      challenge:{ title:"Play with STAR: spot and fix",
+        disclaimer:"These scenarios are fictional but realistic and span different functions. Pick one to start. You can change anytime.",
+        weakLabel:"Weak self-assessment:", qLabel:"Why is this not good? Choose two:",
+        answers:[
+          {txt:"No measurable results or metrics were provided.", correct:true},
+          {txt:"The statement gives only team credit and lacks personal ownership.", correct:true},
+          {txt:"It uses the STAR format correctly.", correct:false},
+          {txt:"It is too specific and includes unnecessary technical detail.", correct:false}
+        ],
+        check:"Check answers", shuffle:"Shuffle", resetScenario:"Reset", error0:"Please select exactly two answers.", error1:"Not quite. Try again—pick the two most accurate reasons.", success:"Great—now drag & drop the statements into the correct STAR buckets below.",
+        step2:"Step 2: Build the strong STAR version", dndIntro:"Drag each statement chip into the correct bucket. When everything is correctly placed, your STAR preview will appear below.",
+        /* English bucket headings (unused in Arabic mode) */
+        dz:{S:"Situation", T:"Task", A:"Action", R:"Result", I:"Impact (optional)"}, preview:"Preview"
+      },
+      scenarios:[
+        {title:"Delivery SLA Dip (Ops)", weak:`"Q2 was fine. I worked hard and did a lot for the team. We tried to improve the SLA and I think customers were happy."`,
+          pieces:[
+            {t:"During Q2 promo week in UAE, on-time SLA fell to 88%.", slot:"S"},
+            {t:"Restore SLA to ≥95% within two weeks.", slot:"T"},
+            {t:"Analyzed order spikes, rebalanced routes, added a peak-hour roster, and automated slot throttling.", slot:"A"},
+            {t:"SLA rose to 96% and average delay dropped from 18→7 minutes.", slot:"R"},
+            {t:"Stabilized customer experience and reduced refunds.", slot:"I"},
+            {t:"I did my best and worked really hard.", slot:"X"}
+          ]},
+        {title:"Onboarding Docs (People Ops)", weak:`"I helped new joiners. Onboarding went okay overall. I think people figured things out eventually."`,
+          pieces:[
+            {t:"New hires reported confusion in week-1 pulse surveys.", slot:"S"},
+            {t:"Create a clear onboarding checklist and self-serve hub.", slot:"T"},
+            {t:"Mapped day-1 tasks, wrote role guides, and partnered with IT to automate access.", slot:"A"},
+            {t:"Time-to-productive reduced from 10→6 days; week-1 access tickets dropped to 0.", slot:"R"},
+            {t:"Managers reclaimed ~40 hours/month and new hires ramped faster.", slot:"I"},
+            {t:"Onboarding was fine; I think everyone was happy.", slot:"X"}
+          ]},
+        {title:"Email Deliverability (Marketing)", weak:`"We sent a big marketing email. I think the results were decent and customers probably liked it."`,
+          pieces:[
+            {t:"Mother’s Day campaign had high bounce rate in test sends.", slot:"S"},
+            {t:"Improve deliverability before the full send.", slot:"T"},
+            {t:"Implemented DMARC, warmed the IP, and cleaned the list.", slot:"A"},
+            {t:"Delivery rate rose from 89%→98%; CTR +22%.", slot:"R"},
+            {t:"Campaign revenue +18% vs last year.", slot:"I"},
+            {t:"We tried really hard on the campaign.", slot:"X"}
+          ]},
+        {title:"Forecast Accuracy (Supply)", weak:`"Valentine’s demand was crazy. We tried to order more but still ran out in KSA."`,
+          pieces:[
+            {t:"Red-rose stockouts occurred across KSA during Valentine’s peak.", slot:"S"},
+            {t:"Increase forecast accuracy ahead of peak.", slot:"T"},
+            {t:"Built a weekly demand model using 3y history and promo flags.", slot:"A"},
+            {t:"MAPE improved 24%→11%; stockouts −60%.", slot:"R"},
+            {t:"Saved ~SAR 120k in prevented lost sales.", slot:"I"},
+            {t:"We did our best with suppliers.", slot:"X"}
+          ]},
+        {title:"App Crash Rate (Product/Eng)", weak:`"App had some issues after release. We fixed a few things and it’s better now."`,
+          pieces:[
+            {t:"Android crash rate spiked after v4.2 release.", slot:"S"},
+            {t:"Restore crash-free sessions to ≥99.5%.", slot:"T"},
+            {t:"Added Crashlytics alerts, hot-fixed RecyclerView leak, expanded QA on low-end devices.", slot:"A"},
+            {t:"Crash-free sessions hit 99.6% within 5 days.", slot:"R"},
+            {t:"CSAT +3pts; rating improved 4.5→4.7.", slot:"I"},
+            {t:"Users were probably happier after that.", slot:"X"}
+          ]}
+      ],
+      guide:{strengths:"Strengths", fixes:"Improvements", tips:"Hints"}
+    },
+    ar:{
+      title:"منصّة ممارسة STAR",
+      subtitle:"طريقتان للاستعداد للتقييم: تمرّن على STAR، ثم العب تحدّي \"اكتشف الخطأ وأصلحه\".",
+      back:"← الرجوع للصفحة الرئيسية",
+      home:{t1:"مارس تغذية راجعة بأسلوب STAR", d1:"اكتب تقييماً ذاتياً قويّاً بأسلوب STAR مع إرشاد مباشر، ومعاينة، واختيار كفاءات، وخيار النسخ.",
+            t2:"العب بـ STAR: اكتشف وأصلِح", d2:"الخطوة ١: حدِّد مشكلتين في تقييم ذاتي ضعيف. الخطوة ٢: اسحب وأفلِت لبناء نسخة STAR قوية.",
+            openPractice:"افتح التمرين", startChallenge:"ابدأ التحدّي"},
+      practice:{ title:"منصّة ممارسة STAR", sub:"تمرّن على وصف تعليقاتك وتقييمك الذاتي وفق STAR: الموقف، المهمة، الإجراء، النتيجة.",
+        fields:{S:"الموقف",T:"المهمة",A:"الإجراء",R:"النتيجة",I:"الأثر أو القيمة",M:"المؤشر (اختياري)"},
+        placeholders:{S:"اذكر السياق باختصار: أين ومتى ومن.",T:"ما مسؤوليتك؟",A:"ماذا فعلت بالتحديد؟ استخدم أفعالاً قوية.",R:"ما الذي تغيّر؟ أدرِج أرقاماً إن أمكن.",I:"لماذا كان ذلك مهمّاً للعمل أو للفريق؟",M:"مثلاً: ‎+٪12، −3 أيام، 95٪ رضا"},
+        comps:"الكفاءات", help:"اختر من ٢ إلى ٤ بما يتناسب مع صياغتك.", preview:"المعاينة", reset:"إعادة ضبط", copy:"نسخ الصياغة", guide:"إرشاد مباشر"},
+      challenge:{ title:"العب بـ STAR: اكتشف وأصلِح",
+        disclaimer:"السيناريوهات افتراضية لكنها واقعية وتشمل وظائف مختلفة. اختر واحداً للبدء ويمكنك التبديل في أي وقت.",
+        weakLabel:"تقييم ذاتي ضعيف:", qLabel:"لماذا هذا غير جيّد؟ اختر إجابتين:",
+        answers:[
+          {txt:"لا توجد نتائج قابلة للقياس أو مؤشرات.", correct:true},
+          {txt:"تعزو الفضل للفريق فقط وتفتقر للملكية الشخصية.", correct:true},
+          {txt:"التقييم يستخدم STAR بشكل صحيح.", correct:false},
+          {txt:"تفاصيل تقنية زائدة وغير ضرورية.", correct:false}
+        ],
+        check:"تحقّق من الإجابات", shuffle:"إعادة ترتيب", resetScenario:"إعادة ضبط",
+        error0:"الرجاء اختيار إجابتين بالضبط.", error1:"ليست دقيقة. حاول مرة أخرى واختر أهم سببين.",
+        success:"رائع — الآن اسحب وأفلِت العبارات في الخانات الصحيحة بالأسفل.",
+        step2:"الخطوة ٢: ابنِ نسخة STAR القوية", dndIntro:"اسحب كل عبارة وضعها في خانتها الصحيحة. عند اكتمالها ستظهر المعاينة النهائية.",
+        /* AR bucket headings WITHOUT Latin letters */
+        dz:{S:"الموقف", T:"المهمة", A:"الإجراء", R:"النتيجة", I:"الأثر (اختياري)"},
+        preview:"المعاينة"
+      },
+      scenarios:[
+        {title:"انخفاض SLA للتوصيل (العمليات)", weak:"\"كان الربع الثاني جيدًا. عملت بجد للفريق. حاولنا تحسين SLA وأعتقد أن العملاء كانوا سعداء.\"",
+          pieces:[
+            {t:"خلال أسبوع العروض في الربع الثاني بالإمارات انخفض مستوى الالتزام بالتسليم إلى ‎88٪.", slot:"S"},
+            {t:"استعادة مستوى الالتزام إلى ‎≥95٪ خلال أسبوعين.", slot:"T"},
+            {t:"حلّلت ذروة الطلب وأعدتُ توازن المسارات وأضفتُ جدول ساعات الذروة وأتمتُّ ضبط السعات.", slot:"A"},
+            {t:"ارتفع الالتزام إلى ‎96٪ وانخفض التأخير المتوسط من 18 إلى 7 دقائق.", slot:"R"},
+            {t:"استقرت تجربة العميل وتراجعت طلبات الاسترداد.", slot:"I"},
+            {t:"بذلت جهدي وعملت بجد.", slot:"X"}
+          ]},
+        {title:"وثائق الانضمام (شؤون الموظفين)", weak:"\"ساعدت المنضمّين الجدد. كانت البداية مقبولة وأظن أنهم عرفوا كل شيء لاحقاً.\"",
+          pieces:[
+            {t:"أظهرت استبيانات الأسبوع الأول وجود ارتباك لدى المنضمّين الجدد.", slot:"S"},
+            {t:"إنشاء قائمة تحقق ومركز معرفة ذاتي واضح.", slot:"T"},
+            {t:"وثّقت مهام اليوم الأول وكتبت أدلة الأدوار وتعاونت مع تقنية المعلومات لأتمتة الصلاحيات.", slot:"A"},
+            {t:"انخفض وقت الوصول للإنتاجية من 10 إلى 6 أيام وتلاشت بلاغات الوصول في الأسبوع الأول.", slot:"R"},
+            {t:"وفّر المديرون نحو 40 ساعة شهرياً وتسارع تمكين المنضمّين.", slot:"I"},
+            {t:"كانت الأمور جيدة والجميع راضٍ على الأغلب.", slot:"X"}
+          ]},
+        {title:"إيصال رسائل البريد (التسويق)", weak:"\"أرسلنا حملة بريدية كبيرة. أظن النتائج كانت معقولة والعملاء أحبوها غالباً.\"",
+          pieces:[
+            {t:"سجلت اختبارات حملة عيد الأم معدل ارتداد مرتفع.", slot:"S"},
+            {t:"تحسين إيصال الرسائل قبل الإرسال الكامل.", slot:"T"},
+            {t:"فعّلت DMARC وسخّنت عنوان IP ونظّفت القائمة.", slot:"A"},
+            {t:"ارتفعت نسبة التسليم من 89٪ إلى 98٪ وارتفع معدل النقر ‎22٪.", slot:"R"},
+            {t:"ارتفع عائد الحملة ‎18٪ مقارنة بالعام الماضي.", slot:"I"},
+            {t:"عملنا بجد كبير على الحملة.", slot:"X"}
+          ]},
+        {title:"دقة التنبؤ (الإمداد)", weak:"\"كان الطلب في الفالنتاين عالياً جداً. حاولنا الطلب أكثر لكن نفدت الكميات في السعودية.\"",
+          pieces:[
+            {t:"نفاد الورد الأحمر في أنحاء السعودية خلال ذروة الفالنتاين.", slot:"S"},
+            {t:"رفع دقة التنبؤ قبل الذروة.", slot:"T"},
+            {t:"أنشأت نموذج طلب أسبوعي باستخدام بيانات 3 سنوات وإشارات العروض.", slot:"A"},
+            {t:"تحسّن الخطأ المطلق المتوسط MAPE من 24٪ إلى 11٪ وتراجعت حالات النفاد ‎60٪.", slot:"R"},
+            {t:"تجنّبنا خسائر تقديرية بنحو 120 ألف ريال سعودي.", slot:"I"},
+            {t:"بذلنا أقصى ما نستطيع مع الموردين.", slot:"X"}
+          ]},
+        {title:"معدل أعطال التطبيق (المنتج/الهندسة)", weak:"\"ظهرت مشاكل بعد الإصدار. أصلحنا بعض الأمور وتحسّنت الحال.\"",
+          pieces:[
+            {t:"ارتفع معدل أعطال أندرويد بعد إصدار ‎v4.2.", slot:"S"},
+            {t:"استعادة الجلسات الخالية من الأعطال إلى ‎≥99.5٪.", slot:"T"},
+            {t:"أضفت تنبيهات Crashlytics وأصلحت تسرب RecyclerView ووسّعت الاختبار على الأجهزة الضعيفة.", slot:"A"},
+            {t:"وصلت الجلسات الخالية من الأعطال إلى ‎99.6٪ خلال 5 أيام.", slot:"R"},
+            {t:"زاد رضا العملاء 3 نقاط وتحسّن التقييم من ‎4.5 إلى ‎4.7.", slot:"I"},
+            {t:"غالباً أصبح المستخدمون أكثر رضاً.", slot:"X"}
+          ]}
+      ],
+      guide:{strengths:"نِقاط القوة", fixes:"مجالات التحسين", tips:"تلميحات"}
+    }
+  };
+
+  const compsEN=["Customer Focus","Innovation","Accountability","Collaboration/Teambuilding","Process Improvement","Resource Management","Technical Credibility","Problem-Solving","Learning Agility","Digital Fluency","Leading Projects","Effective Communications/Interpersonal Skills","Influencing/Negotiating","Emotional Intelligence","Conflict Resolution","Systems Thinking","Strategic Thinking","Decisiveness"];
+  const compsAR=["تركيز على العميل","الابتكار","المساءلة","التعاون/بناء الفريق","تحسين العمليات","إدارة الموارد","المصداقية التقنية","حل المشكلات","المرونة في التعلّم","الإلمام الرقمي","قيادة المشاريع","اتصال فعّال/مهارات شخصية","التأثير/التفاوض","الذكاء العاطفي","حل النزاعات","تفكير منظومي","تفكير استراتيجي","الحسم"];
+
+  /* PRACTICE */
+  const A = { s:$("A_s"), t:$("A_t"), a:$("A_a"), r:$("A_r"), i:$("A_i"), m:$("A_m"),
+              chips:$("chipsA"), count:$("countA"), preview:$("A_preview"),
+              reset:$("A_reset"), copy:$("A_copy"), bar:$("barA"), score:$("scoreA") };
+  let selectedComps = new Set();
+
+  function renderComps(){
+    A.chips.innerHTML=""; selectedComps.clear();
+    const list = (lang==="ar") ? compsAR : compsEN;
+    list.forEach(c=>{
+      const b=document.createElement("button"); b.type="button"; b.className="chip"; b.textContent=c;
+      b.addEventListener("click", ()=>{ if(selectedComps.has(c)){ selectedComps.delete(c); b.classList.remove("sel"); } else { selectedComps.add(c); b.classList.add("sel"); }
+        A.count.textContent = (lang==="ar"?"محدد ":"") + selectedComps.size + (lang==="ar"?"":" selected");
+        updatePracticeScore(); updateGuidance(); });
+      A.chips.appendChild(b);
+    });
+    A.count.textContent = (lang==="ar") ? "محدد 0" : "0 selected";
+  }
+  function practiceVals(){ return {s:A.s.value,t:A.t.value,a:A.a.value,r:A.r.value,i:A.i.value,m:A.m.value}; }
+  function buildPracticePreview(v){
+    const L=T[lang].practice.fields;
+    const parts=[]; if(v.s.trim()) parts.push(`${L.S}: ${v.s.trim()}`); if(v.t.trim()) parts.push(`${L.T}: ${v.t.trim()}`); if(v.a.trim()) parts.push(`${L.A}: ${v.a.trim()}`);
+    const rM=[v.r.trim(),v.m.trim()].filter(Boolean).join(" "); if(rM) parts.push(`${L.R}: ${rM}`); if(v.i.trim()) parts.push(`${L.I}: ${v.i.trim()}`);
+    return parts.join("\n\n");
+  }
+  function updatePracticePreview(){ const v=practiceVals(); A.preview.textContent = buildPracticePreview(v) || (lang==="ar" ? "ستظهر صياغة STAR هنا أثناء الكتابة." : "Your STAR statement will build here as you type."); }
+  function updatePracticeScore(){
+    const v=practiceVals(); const weights={s:15,t:15,a:30,r:25,i:10,m:5}; let score=0;
+    for(const k in weights){ const txt=(v[k]||"").trim(); if(k==="m"){ if(txt) score+=weights[k]; } else if(txt.length>=12) score+=weights[k]; }
+    if(selectedComps.size>=2) score+=5; score=Math.min(100,score); A.bar.style.width=score+"%"; A.score.textContent=score+"%";
+  }
+  [A.s,A.t,A.a,A.r,A.i,A.m].forEach(el=> el.addEventListener("input", ()=>{ updatePracticePreview(); updatePracticeScore(); updateGuidance(); }));
+  A.reset.addEventListener("click", ()=>{ [A.s,A.t,A.a,A.r,A.i,A.m].forEach(x=>x.value=""); renderComps(); updatePracticePreview(); updatePracticeScore(); updateGuidance(); });
+  A.copy.addEventListener("click", async ()=>{ try{ await navigator.clipboard.writeText(A.preview.textContent||""); A.copy.textContent=(lang==="ar"?"تم النسخ!":"Copied!"); setTimeout(()=> A.copy.textContent = T[lang].practice.copy, 1100);}catch(e){} });
+
+  /* Guidance */
+  const guideWrap=$("guideWrap");
+  function updateGuidance(){
+    const v=practiceVals(); const all=(A.preview.textContent||"") + " " + [v.s,v.t,v.a,v.r,v.i,v.m].join(" ");
+    const strengths=[], fixes=[], hints=[];
+    const hasAction=/(led|launched|optimized|built|automated|resolved|designed|analyz|reduced|increased|improved|shipped|قاد|أطلق|حس|بن[ىي]|أتمت|حل|صم|حلل|خفض|زاد|طو)/i.test(all);
+    const hasMetric=/[%]|(\b\d+\s*(pp|days?|hours?|mins?|minutes?|weeks?|أيام|ساعات|دقائق|٪)\b)|\b\d+\.\d+\b/.test(all);
+    const hasImpact=/(customer|csat|revenue|cost|refund|sla|experience|team|manager|عميل|رضا|إيراد|تكلفة|استرداد|خبرة|فريق|مدير)/i.test(all);
+    const len=all.replace(/\s+/g," ").trim().length;
+    if(hasAction) strengths.push(lang==="en"?"Strong action verbs present.":"أفعال قوية وواضحة.");
+    if(hasMetric) strengths.push(lang==="en"?"Includes measurable metrics.":"يتضمن مؤشرات رقمية.");
+    if(hasImpact) strengths.push(lang==="en"?"Clear business/customer impact.":"يوضح الأثر على العمل/العميل.");
+    if(!hasAction) fixes.push(lang==="en"?"Add decisive action verbs (led, built, launched, optimized…).":"أضِف أفعالاً حاسمة (قاد، بنى، أطلق، حسّن…).");
+    if(!hasMetric) fixes.push(lang==="en"?"Quantify at least one result (%, days, cost, count).":"كمّن نتيجة واحدة على الأقل (٪، أيام، تكلفة، عدد).");
+    if(!hasImpact) fixes.push(lang==="en"?"Tie the result to impact (customer, cost, revenue, SLA).":"اربط النتيجة بأثر (العميل، التكلفة، الإيراد، مستوى الالتزام).");
+    if(len>0 && len<120) hints.push(lang==="en"?"Expand to ~3–5 concise sentences.":"وسّع الصياغة إلى ٣–٥ جمل موجزة.");
+    if(len>900) hints.push(lang==="en"?"Tighten wording; aim for brevity.":"اختصر الصياغة واجعلها مركّزة.");
+    if(selectedComps.size<2) hints.push(lang==="en"?"Select 2–4 competencies to align impact.":"اختر من ٢–٤ كفاءات لتوضيح الأثر.");
+    guideWrap.innerHTML = [
+      `<div class="rowline"><span class="badge good">${T[lang].guide.strengths}</span><div>${(strengths.length?strengths:[lang==="en"?"Keep going—add more detail.":"تابع—أضِف تفاصيل أكثر."]).join(" • ")}</div></div>`,
+      `<div class="rowline"><span class="badge bad">${T[lang].guide.fixes}</span><div>${(fixes.length?fixes:[lang==="en"?"Add an Action and a Result to qualify as STAR.":"أضِف إجراءً ونتيجة لاستيفاء STAR."]).join(" • ")}</div></div>`,
+      `<div class="rowline"><span class="badge warn">${T[lang].guide.tips}</span><div>${(hints.length?hints:[lang==="en"?"Lead with Action; end with Result/Impact.":"ابدأ بالإجراء واختم بالنتيجة/الأثر."]).join(" • ")}</div></div>`
+    ].join("");
+  }
+
+  /* CHALLENGE */
+  const scenarioCards=$("scenarioCards"), weakText=$("weakText"), choicesWrap=$("choices"), qMsg=$("qMsg");
+  const dndCard=$("dndCard"), piecePool=$("piecePool"), finalWrap=$("finalWrap");
+  let currentAnswers=[], currentScenarioIndex=0;
+
+  function renderScenarioButtons(){
+    scenarioCards.innerHTML="";
+    const list=T[lang].scenarios;
+    list.forEach((s, idx)=>{
+      const btn=document.createElement("button");
+      btn.type="button"; btn.className="scenario-card"+(idx===currentScenarioIndex?" active":"");
+      btn.innerHTML=`<span class="scenario-num">${idx+1}</span>
+                     <span><div class="scenario-title">${s.title}</div>
+                     <div class="scenario-muted">${lang==="en"?"Click to load":"اضغط للعرض"}</div></span>`;
+      btn.addEventListener("click", ()=>{ currentScenarioIndex=idx; Array.from(scenarioCards.children).forEach(c=>c.classList.remove("active")); btn.classList.add("active"); setScenario(idx); });
+      scenarioCards.appendChild(btn);
+    });
+  }
+
+  function shuffleAnswers(){
+    currentAnswers = JSON.parse(JSON.stringify(T[lang].challenge.answers));
+    for(let i=currentAnswers.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); [currentAnswers[i],currentAnswers[j]]=[currentAnswers[j],currentAnswers[i]]; }
+    for(let i=0;i<currentAnswers.length-1;i++){
+      if(currentAnswers[i].correct && currentAnswers[i+1].correct){ return shuffleAnswers(); }
+    }
+  }
+
+  function setScenario(idx){
+    const L=T[lang];
+    dndCard.style.display="none"; qMsg.style.display="none"; finalWrap.style.display="none"; $("B_preview").textContent="";
+    const sc = L.scenarios[idx];
+    weakText.textContent=sc.weak;
+    piecePool.innerHTML="";
+    /* Use Arabic bucket headings if lang === 'ar' */
+    const dzMap = (lang === 'ar') ? L.challenge.dz : T.en.challenge.dz;
+    document.querySelectorAll(".dropzone").forEach(dz=>{
+      const slot=dz.dataset.slot; dz.classList.remove("dz-ok","dz-bad");
+      dz.querySelector(".dz-head").textContent = dzMap[slot];
+    });
+    const pieces = JSON.parse(JSON.stringify(sc.pieces));
+    pieces.sort(()=>Math.random()-0.5).forEach(p=>{
+      const chip=document.createElement("div"); chip.className="piece"; chip.textContent=p.t; chip.draggable=true; chip.dataset.slot=p.slot;
+      chip.addEventListener("dragstart", ()=> chip.classList.add("dragging"));
+      chip.addEventListener("dragend", ()=> chip.classList.remove("dragging"));
+      piecePool.appendChild(chip);
+    });
+    shuffleAnswers(); renderChoices(); setProgressB(0);
+  }
+
+  function renderChoices(){
+    choicesWrap.innerHTML="";
+    currentAnswers.forEach((opt,i)=>{
+      const row=document.createElement("label"); row.className="choice";
+      const cb=document.createElement("input"); cb.type="checkbox"; cb.dataset.index=i;
+      const span=document.createElement("span"); span.textContent=opt.txt;
+      row.appendChild(cb); row.appendChild(span); choicesWrap.appendChild(row);
+    });
+  }
+
+  function makeDroppable(sel){
+    document.querySelectorAll(sel).forEach(zone=>{
+      zone.addEventListener("dragover", e=> e.preventDefault());
+      zone.addEventListener("drop", e=>{
+        e.preventDefault();
+        const dragging=document.querySelector(".piece.dragging");
+        if(dragging){ zone.appendChild(dragging); }
+      });
+    });
+  }
+  makeDroppable(".dropzone, .pool");
+
+  $("reshuffleBtn").addEventListener("click", ()=>{ shuffleAnswers(); renderChoices(); qMsg.style.display="none"; });
+  $("resetScenario").addEventListener("click", ()=> setScenario(currentScenarioIndex));
+  $("checkBtn").addEventListener("click", ()=>{
+    const picks = Array.from(choicesWrap.querySelectorAll('input[type="checkbox"]:checked')).map(x=>+x.dataset.index);
+    const L = T[lang].challenge;
+    if(picks.length!==2){ return showMsg("error", L.error0); }
+    const correctIdx = currentAnswers.map((a,i)=> a.correct?i:null).filter(x=>x!==null);
+    const ok = picks.every(p=> correctIdx.includes(p));
+    if(!ok){ return showMsg("error", L.error1); }
+    showMsg("success", L.success);
+    dndCard.style.display="block";
+  });
+
+  function showMsg(type,text){ qMsg.className="alert "+(type==="success"?"success":"error"); qMsg.textContent=text; qMsg.style.display="block"; }
+  function setProgressB(p){ $("barB").style.width=p+"%"; $("scoreB").textContent=p+"%"; }
+
+  $("checkPlacement").addEventListener("click", ()=>{
+    let allCorrect=true, total=0, correct=0;
+    document.querySelectorAll(".dropzone").forEach(dz=>{
+      const want=dz.dataset.slot;
+      const pieces=Array.from(dz.querySelectorAll(".piece"));
+      const wrong=pieces.filter(p=> p.dataset.slot!==want && !(want==="I" && p.dataset.slot==="I"));
+      const ok = pieces.length>0 && wrong.length===0 && pieces.every(p=> p.dataset.slot===want);
+      dz.classList.remove("dz-ok","dz-bad"); dz.classList.add(ok?"dz-ok":"dz-bad");
+      if(!ok) allCorrect=false;
+      total += pieces.length; correct += ok?pieces.length: (pieces.length - wrong.length);
+    });
+    const pct = Math.max(0, Math.min(100, Math.round((correct/Math.max(1,total))*100)));
+    setProgressB(pct);
+    if(allCorrect){ buildFinal(); confettiBurst(); }
+  });
+  $("resetPlacement").addEventListener("click", ()=> setScenario(currentScenarioIndex));
+
+  function buildFinal(){
+    const map={S:[],T:[],A:[],R:[],I:[]};
+    document.querySelectorAll(".dropzone").forEach(dz=>{
+      const slot=dz.dataset.slot;
+      Array.from(dz.querySelectorAll(".piece")).forEach(p=>{ if(p.dataset.slot!=="X") map[slot].push(p.textContent); });
+    });
+    const labels = T[lang].practice.fields; /* Arabic in ar mode */
+    const order=["S","T","A","R","I"];
+    const out = order.map(k=>{
+      const label=labels[ {S:"S",T:"T",A:"A",R:"R",I:"I"}[k] ];
+      const val=(map[k]||[]).join(" ");
+      return val? `${label}: ${val}` : "";
+    }).filter(Boolean).join("\n\n");
+    $("B_preview").textContent=out; $("finalWrap").style.display="block"; setProgressB(100);
+  }
+
+  /* Language apply */
+  function applyLang(){
+    const L=T[lang];
+    document.body.classList.toggle("rtl", lang==="ar");
+    $("appTitle").textContent=L.title;
+    $("subtitle").textContent=L.subtitle;
+    $("backHome").textContent=L.back;
+    $("tile1Title").textContent=L.home.t1; $("tile1Desc").textContent=L.home.d1; $("gotoPractice").textContent=L.home.openPractice;
+    $("tile2Title").textContent=L.home.t2; $("tile2Desc").textContent=L.home.d2; $("gotoChallenge").textContent=L.home.startChallenge;
+    $("pracTitle").textContent=L.practice.title; $("pracSub").textContent=L.practice.sub;
+    $("lblA_sit").textContent=L.practice.fields.S; $("lblA_task").textContent=L.practice.fields.T; $("lblA_action").textContent=L.practice.fields.A; $("lblA_result").textContent=L.practice.fields.R; $("lblA_impact").textContent=L.practice.fields.I; $("lblA_metric").textContent=L.practice.fields.M;
+    A.s.placeholder=L.practice.placeholders.S; A.t.placeholder=L.practice.placeholders.T; A.a.placeholder=L.practice.placeholders.A; A.r.placeholder=L.practice.placeholders.R; A.i.placeholder=L.practice.placeholders.I; A.m.placeholder=L.practice.placeholders.M;
+    $("lblA_comp").textContent=L.practice.comps; $("helpA").textContent=L.practice.help; $("lblA_prev").textContent=L.practice.preview; $("guideTitle").textContent=L.practice.guide;
+
+    $("chalTitle").textContent=L.challenge.title; $("disclaimer").textContent=L.challenge.disclaimer; $("weakLabel").textContent=L.challenge.weakLabel; $("qLabel").textContent=L.challenge.qLabel;
+    $("checkBtn").textContent=L.challenge.check; $("reshuffleBtn").textContent=L.challenge.shuffle; $("resetScenario").textContent=L.challenge.resetScenario;
+    $("buildStrong").textContent=L.challenge.step2; $("dndIntro").textContent=L.challenge.dndIntro;
+    /* Bucket headings: Arabic in ar, English in en */
+    const dzMap = (lang === 'ar') ? L.challenge.dz : T.en.challenge.dz;
+    $("dzS").textContent=dzMap.S; $("dzT").textContent=dzMap.T; $("dzA").textContent=dzMap.A; $("dzR").textContent=dzMap.R; $("dzI").textContent=dzMap.I;
+    $("lblB_prev").textContent=L.challenge.preview;
+
+    $("langLabel").textContent = (lang==="ar") ? "العربية" : "English";
+
+    renderComps(); renderScenarioButtons(); setScenario(currentScenarioIndex); updatePracticePreview(); updatePracticeScore(); updateGuidance();
+  }
+
+  $("langSwitch").addEventListener("change", function() {
+    lang = this.checked ? "ar" : "en";
+    applyLang();
+  });
+
+  /* Init */
+  renderComps(); renderScenarioButtons(); setScenario(0); applyLang(); updateGuidance();
+});
+</script>
+</body>
+</html>
